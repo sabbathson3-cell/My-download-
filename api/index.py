@@ -3,7 +3,7 @@ from flask_cors import CORS
 import yt_dlp
 
 app = Flask(__name__)
-CORS(app)
+CORS(app)  # ब्लगस्पटसँग लिंक जोड्नका लागि
 
 @app.route('/')
 def home():
@@ -15,23 +15,22 @@ def get_link():
     if not video_url:
         return jsonify({"error": "URL required"}), 400
 
-    # 🚀 युट्युबको कडा सेक्युरिटी तोड्ने र सबै युजरलाई डाउनलोड दिन मिल्ने सेटिङ
+    # युट्युबको कडा सेक्युरिटी तोड्ने र सबैका लागि चल्ने मुख्य सेटिङ
     ydl_opts = {
         'format': 'best[ext=mp4]/best',
         'quiet': True,
         'no_warnings': True,
         'nocheckcertificate': True,
-        # 🧠 मुख्य जुक्ति: युट्युबलाई मोबाइल र वेबका फरक-फरक क्लाइन्टबाट रिक्वेस्ट पठाएर झुक्याउने
+        # 🧠 युट्युबलाई आधिकारिक मोबाइल एपबाट रिक्वेस्ट आएको भन्दै झुक्याउने जुक्ति
         'extractor_args': {
             'youtube': {
-                'player_client': ['android', 'web_embedded', 'ios'],
+                'player_client': ['android', 'ios', 'web_embedded'],
                 'skip': ['dash', 'hls']
             }
         },
-        # डाउनलोड स्पिड बढाउन र आईपी ब्लक हुन नदिन सफा हेडरहरू पठाउने
         'http_headers': {
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
             'Accept-Language': 'en-US,en;q=0.5',
         }
     }
